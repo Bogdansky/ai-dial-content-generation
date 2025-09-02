@@ -6,9 +6,6 @@ from task._utils.model_client import DialModelClient
 from task._models.role import Role
 from task.image_to_text.openai.message import ContentedMessage, TxtContent, ImgContent, ImgUrl
 
-# ------------------------
-# THIS TASK IS OPTIONAL
-# ------------------------
 
 def start() -> None:
     project_root = Path(__file__).parent.parent.parent.parent
@@ -19,18 +16,10 @@ def start() -> None:
     base64_image = base64.b64encode(image_bytes).decode('utf-8')
 
     # TODO:
-    #  1. Create DialModelClient instance:
-    #    - endpoint: DIAL_CHAT_COMPLETIONS_ENDPOINT
-    #    - deployment_name: 'gpt-4o'
-    #    - api_key: API_KEY
-    #    - Store in variable: dalle_client
-    #  2. Call dalle_client.get_completion() with list containing one ContentedMessage:
-    #    - role: Role.USER
-    #    - content: list with two items:
-    #      * TxtContent(text="What do you see on this picture?")
-    #      * ImgContent(image_url=ImgUrl(url=f"data:image/png;base64,{base64_image}"))
-    #      * OPTIONAL: You can pass downloadable image instead of base64:
-    #           ImgContent(image_url=ImgUrl(url="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"))
+    #  1. Create DialModelClient
+    #  2. Call client to analise image:
+    #    - try with base64 encoded format
+    #    - try with URL: https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg
     #  ----------------------------------------------------------------------------------------------------------------
     #  Note: This approach embeds the image directly in the message as base64 data URL! Here we follow the OpenAI
     #        Specification but since requests are going to the DIAL Core, we can use different models and DIAL Core
