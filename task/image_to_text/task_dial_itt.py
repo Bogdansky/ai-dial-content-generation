@@ -11,20 +11,31 @@ from task._models.role import Role
 
 
 async def _put_image() -> Attachment:
-    file_name = 'dialx-banner.png'
+    file_name = '20260128_111428_Image.png'
     image_path = Path(__file__).parent.parent.parent / file_name
     mime_type_png = 'image/png'
-    # TODO:
     #  1. Create DialBucketClient
     #  2. Open image file
     #  3. Use BytesIO to load bytes of image
     #  4. Upload file with client
     #  5. Return Attachment object with title (file name), url and type (mime type)
-    raise NotImplementedError
+    async with DialBucketClient(api_key=API_KEY, base_url=DIAL_URL) as client:
+        with open(image_path, "rb") as image_file:
+            content = BytesIO(image_file.read())
+        upload_result = await client.put_file(
+            name=file_name,
+            mime_type=mime_type_png,
+            content=content,
+        )
+
+    return Attachment(
+        title=file_name,
+        url=upload_result.get("url"),
+        type=mime_type_png,
+    )
 
 
 def start() -> None:
-    # TODO:
     #  1. Create DialModelClient
     #  2. Upload image (use `_put_image` method )
     #  3. Print attachment to see result
@@ -38,7 +49,21 @@ def start() -> None:
     #        adapts this attachment to Message content in appropriate format for Model.
     #  TRY THIS APPROACH WITH DIFFERENT MODELS!
     #  Optional: Try upload 2+ pictures for analysis
-    raise NotImplementedError
+    client = DialModelClient(
+        endpoint=DIAL_CHAT_COMPLETIONS_ENDPOINT,
+        deployment_name="gpt-4o",
+        api_key=API_KEY,
+    )
+
+    attachment = asyncio.run(_put_image())
+    print(attachment)
+
+    message = Message(
+        role=Role.USER,
+        content="What do you see on this picture?",
+        custom_content=CustomContent(attachments=[attachment]),
+    )
+    client.get_completion(messages=[message])
 
 
 start()
